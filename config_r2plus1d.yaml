@@ -29,12 +29,10 @@ CONFIG:
   DATA:
     TRAIN_ANNO_PATH: './data/ucfTrainTestlist/trainlist01.txt'
     VAL_ANNO_PATH: './data/ucfTrainTestlist/testlist01_new.txt'
-    TRAIN_DATA_PATH: './data/rgb'
-    VAL_DATA_PATH:  './data/rgb'
+    DATA_PATH: './data/rgb'
     CLASS_IDX_PATH: './data/ucfTrainTestlist/classInd.txt'
-    MODE: 'rgb'
     NUM_CLASSES: 101
-    CLIP_LEN: 64
+    CLIP_LEN: 32
     FRAME_RATE: 2
     NUM_SEGMENT: 1
     NUM_CROP: 1
@@ -47,7 +45,7 @@ CONFIG:
     NAME: 'r2plus1d_v1_resnet50_custom'
     PRETRAINED: True
     LOAD: False
-    LOAD_PATH: 'logs/i3d/101/checkpoints/baseline.pth'
+    LOAD_PATH: 
 
   LOG:
     BASE_PATH: './logs/r2plus1d'

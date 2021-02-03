@@ -29,12 +29,10 @@ CONFIG:
   DATA:
     TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
     VAL_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/testlist01_new.txt'
-    TRAIN_DATA_PATH: '../../../../hub_data/video/ucf101'
-    VAL_DATA_PATH:  '../../../../hub_data/video/ucf101'
+    DATA_PATH: '../../../../hub_data/video/ucf101'
     CLASS_IDX_PATH: '../../../../hub_data/video/ucfTrainTestlist/classInd.txt'
-    MODE: 'rgb'
     NUM_CLASSES: 101
-    CLIP_LEN: 64
+    CLIP_LEN: 32
     FRAME_RATE: 2
     NUM_SEGMENT: 1
     NUM_CROP: 1

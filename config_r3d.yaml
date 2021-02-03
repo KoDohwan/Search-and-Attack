@@ -18,7 +18,7 @@ CONFIG:
     BATCH_SIZE: 50
     LR: 0.05
     MOMENTUM: 0.9
-    W_DECAY: 1e-3
+    W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
     WARMUP_EPOCHS: 5
@@ -36,7 +36,7 @@ CONFIG:
     DATA_PATH: '../../../../hub_data/video/ucf101'
     CLASS_IDX_PATH: '../../../../hub_data/video/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
-    CLIP_LEN: 64
+    CLIP_LEN: 32
     FRAME_RATE: 2
     NUM_SEGMENT: 1
     NUM_CROP: 1
