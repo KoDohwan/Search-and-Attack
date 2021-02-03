@@ -232,8 +232,8 @@ class VideoClsDataset(Dataset):
 def build_dataloader(cfg):
     train_transforms = transforms.Compose([transforms.Resize((128, 171)),
                                         transforms.RandomHorizontalFlip(),
-                                        transforms.RandomCrop((112, 112)),
-                                        # transforms.RandomResizedCrop(112, (1.0, 1.25)),
+                                        # transforms.RandomCrop((112, 112)),
+                                        transforms.RandomResizedCrop(112, (0.75, 1.25)),
                                         transforms.ToTensor(),
                                         transforms.Normalize(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
     train_dataset = Dataset(cfg.CONFIG.DATA.TRAIN_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, train_transforms)

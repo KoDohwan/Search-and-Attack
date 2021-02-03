@@ -8,7 +8,7 @@ import torchvision
 
 __all__ = ['R2Plus1D', 'r2plus1d_v1_resnet18_kinetics400', 'r2plus1d_v1_resnet34_kinetics400',
            'r2plus1d_v1_resnet50_kinetics400', 'r2plus1d_v1_resnet101_kinetics400',
-           'r2plus1d_v1_resnet152_kinetics400', 'r2plus1d_v1_resnet50_custom', 'r3d', 'r2plus1d']
+           'r2plus1d_v1_resnet152_kinetics400', 'r2plus1d_v1_resnet50_custom']
 
 
 def conv3x1x1(in_planes, out_planes, spatial_stride=1, temporal_stride=1, dilation=1):
@@ -347,16 +347,6 @@ def r2plus1d_v1_resnet50_custom(cfg):
         msg = model.load_state_dict(state_dict, strict=False)
         assert set(msg.missing_keys) == {'fc.weight', 'fc.bias'}
         print("=> initialized from a R2+1D model pretrained on Kinetcis400 dataset")
-    return model
-
-def r3d(cfg):
-    model = torchvision.models.video.r3d_18(pretrained=True, progress=True)
-    model.fc = nn.Linear(512, cfg.CONFIG.DATA.NUM_CLASSES)
-    return model
-
-def r2plus1d(cgd):
-    model = torchvision.models.video.r2plus1d_18(pretrained=True, progress=True)
-    model.fc = nn.Linear(512, cfg.CONFIG.DATA.NUM_CLASSES)
     return model
 
 if __name__ == '__main__':

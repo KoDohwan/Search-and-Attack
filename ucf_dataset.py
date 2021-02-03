@@ -67,24 +67,7 @@ class UCF(data_utl.Dataset):
     def __getitem__(self, index):
         num_clip = 32
         vid, label, num_frames = self.data[index]
-        
 
-        # if num_frames <= 63:
-        #     frame_rate = 1
-        # elif num_frames <= 95:
-        #     frame_rate = 2
-        # elif num_frames <= 127:
-        #     frame_rate = 3
-        # elif num_frames <= 159:
-        #     frame_rate = 4
-        # elif:
-        #     frame_rate = 5
-        # elif num_frames <= 191:
-        #     frame_rate = 5
-        # elif num_frames <= 223:
-        #     frame_rate = 6
-        # else:
-        #     frame_rate = 7
         frame_rate = int(np.floor(float(num_frames) / float(num_clip)))
 
         # start_frame = 1

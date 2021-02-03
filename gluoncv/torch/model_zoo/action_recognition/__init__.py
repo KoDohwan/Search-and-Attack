@@ -6,6 +6,7 @@ from .i3d_slow import *
 from .slowfast import *
 from .r2plus1dv1 import *
 from .r2plus1dv2 import *
+from .resnet import *
 from .tpn import *
 from .ircsnv2 import *
 from .lrcn import lrcn

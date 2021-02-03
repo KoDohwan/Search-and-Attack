@@ -28,7 +28,6 @@ def train_classification(base_iter, model, dataloader, epoch, criterion, optimiz
     end = time.time()
     for step, data in enumerate(dataloader):
         base_iter = base_iter + 1
-
         train_batch = data[0].cuda()
         train_label = data[1].cuda()
         train_label = train_label.long().view(-1)
