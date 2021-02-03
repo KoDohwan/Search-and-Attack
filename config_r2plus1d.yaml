@@ -1,0 +1,57 @@
+DDP_CONFIG:
+  WORLD_SIZE: 1
+  WORLD_RANK: 0
+  GPU_WORLD_SIZE: 8
+  GPU_WORLD_RANK: 0
+  DIST_URL: 'tcp://163.152.29.65:23456'
+  WOLRD_URLS: ['163.152.29.65']
+  AUTO_RANK_MATCH: True
+  DIST_BACKEND: 'nccl'
+  GPU: 0
+  DISTRIBUTED: True
+
+CONFIG:
+  TRAIN:
+    EPOCH_NUM: 100
+    BATCH_SIZE: 12
+    LR: 0.05
+    MOMENTUM: 0.9
+    W_DECAY: 1e-5
+    LR_POLICY: 'Step'
+    USE_WARMUP: False
+    LR_MILESTONE: [40, 80]
+    STEP: 0.1
+
+  VAL:
+    FREQ: 1
+    BATCH_SIZE: 4
+
+  DATA:
+    TRAIN_ANNO_PATH: './data/ucfTrainTestlist/trainlist01.txt'
+    VAL_ANNO_PATH: './data/ucfTrainTestlist/testlist01_new.txt'
+    TRAIN_DATA_PATH: './data/rgb'
+    VAL_DATA_PATH:  './data/rgb'
+    CLASS_IDX_PATH: './data/ucfTrainTestlist/classInd.txt'
+    MODE: 'rgb'
+    NUM_CLASSES: 101
+    CLIP_LEN: 64
+    FRAME_RATE: 2
+    NUM_SEGMENT: 1
+    NUM_CROP: 1
+    TEST_NUM_SEGMENT: 10
+    TEST_NUM_CROP: 3
+    MULTIGRID: False
+    KEEP_ASPECT_RATIO: False
+
+  MODEL:
+    NAME: 'r2plus1d_v1_resnet50_custom'
+    PRETRAINED: True
+    LOAD: False
+    LOAD_PATH: 'logs/i3d/101/checkpoints/baseline.pth'
+
+  LOG:
+    BASE_PATH: './logs/r2plus1d'
+    LOG_DIR: 'tb_log'
+    SAVE_DIR: 'checkpoints'
+    EVAL_DIR: './logs/r2plus1d/eval'
+    SAVE_FREQ: 1
