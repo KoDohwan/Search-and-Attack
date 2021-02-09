@@ -11,7 +11,7 @@ DDP_CONFIG:
   DISTRIBUTED: True
 
 CONFIG:
-  VISIBLE_GPU: 0,1,2,3,4,5,6,7
+  VISIBLE_GPU: 0,1,2,3
 
   TRAIN:
     EPOCH_NUM: 100
@@ -46,10 +46,10 @@ CONFIG:
     KEEP_ASPECT_RATIO: False
 
   MODEL:
-    NAME: 'r3d'
+    NAME: 'r3d_18'
     PRETRAINED: False
     LOAD: False
-    LOAD_PATH: 'logs/r3d/baseline.pth'
+    LOAD_PATH: 'logs/r3d/r3d_baseline.pth'
 
   LOG:
     BASE_PATH: './logs/r3d'

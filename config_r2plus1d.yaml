@@ -11,28 +11,28 @@ DDP_CONFIG:
   DISTRIBUTED: True
 
 CONFIG:
-  VISIBLE_GPU: 0,1,2,3,4,5,6,7
+  VISIBLE_GPU: 0,1,2,3
   
   TRAIN:
     EPOCH_NUM: 100
-    BATCH_SIZE: 12
-    LR: 0.05
+    BATCH_SIZE: 10
+    LR: 0.005
     MOMENTUM: 0.9
-    W_DECAY: 1e-5
+    W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
-    LR_MILESTONE: [40, 80]
+    LR_MILESTONE: [10, 30, 50]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 4
+    BATCH_SIZE: 50
 
   DATA:
-    TRAIN_ANNO_PATH: './data/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: './data/ucfTrainTestlist/testlist01_new.txt'
-    DATA_PATH: './data/rgb'
-    CLASS_IDX_PATH: './data/ucfTrainTestlist/classInd.txt'
+    TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
+    VAL_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/testlist01_new.txt'
+    DATA_PATH: '../../../../hub_data/video/ucf101'
+    CLASS_IDX_PATH: '../../../../hub_data/video/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
     CLIP_LEN: 32
     FRAME_RATE: 2
@@ -44,10 +44,10 @@ CONFIG:
     KEEP_ASPECT_RATIO: False
 
   MODEL:
-    NAME: 'r2plus1d_v1_resnet50_custom'
-    PRETRAINED: True
-    LOAD: False
-    LOAD_PATH: 
+    NAME: 'r2plus1d_18'
+    PRETRAINED: False
+    LOAD: True
+    LOAD_PATH: 'logs/r2plus1d/r2plus1d_18.pth'
 
   LOG:
     BASE_PATH: './logs/r2plus1d'
