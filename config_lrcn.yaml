@@ -3,7 +3,7 @@ DDP_CONFIG:
   WORLD_RANK: 0
   GPU_WORLD_SIZE: 8
   GPU_WORLD_RANK: 0
-  DIST_URL: 'tcp://163.152.29.65:2347'
+  DIST_URL: 'tcp://163.152.29.65:2348'
   WOLRD_URLS: ['163.152.29.65']
   AUTO_RANK_MATCH: True
   DIST_BACKEND: 'nccl'
@@ -12,21 +12,26 @@ DDP_CONFIG:
 
 CONFIG:
   VISIBLE_GPU: 0,1,2,3,4,5,6,7
-  
+
   TRAIN:
     EPOCH_NUM: 100
-    BATCH_SIZE: 22
+    BATCH_SIZE: 15
     LR: 0.005
     MOMENTUM: 0.9
     W_DECAY: 0.
     LR_POLICY: 'Step'
     USE_WARMUP: False
-    LR_MILESTONE: [40, 80]
+    LR_MILESTONE: [20, 40, 60]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 1
+    BATCH_SIZE: 7
+
+  ADV:
+    METHOD: 'FGSM'
+    TYPE: 'All'
+    FRAME: 32
 
   DATA:
     TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
@@ -47,7 +52,11 @@ CONFIG:
     NAME: 'lrcn'
     PRETRAINED: False
     LOAD: True
-    LOAD_PATH: 'logs/lrcn/1/checkpoints/baseline.pth'
+    LOAD_PATH: 'logs/lrcn/lrcn_baseline.pth'
+    LATENT_DIM: 512
+    HIDDEN_SIZE: 256
+    LSTM_LAYERS: 1
+    BIDIRECTIONAL: True
 
   LOG:
     BASE_PATH: './logs/lrcn'

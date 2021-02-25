@@ -78,7 +78,6 @@ def get_model(cfg):
         err_str += '%s' % ('\n\t'.join(sorted(_models.keys())))
         raise ValueError(err_str)
     net = _models[name](cfg)
-    # net = _models[name](latent_dim=512, hidden_size=256, lstm_layers=1, bidirectional=True, n_class=101)
     return net
 
 def get_model_list():

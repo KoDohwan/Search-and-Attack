@@ -11,22 +11,27 @@ DDP_CONFIG:
   DISTRIBUTED: True
 
 CONFIG:
-  VISIBLE_GPU: 0,1,2,3
-  
+  VISIBLE_GPU: 0,1,2,3,4,5,6,7
+
   TRAIN:
     EPOCH_NUM: 100
     BATCH_SIZE: 60
     LR: 0.05
-    MOMENTUM: 0.9
+    MOMENTUM: 0.95
     W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
-    LR_MILESTONE: [10, 30, 50]
+    LR_MILESTONE: [20, 40, 60]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 50
+    BATCH_SIZE: 30
+
+  ADV:
+    METHOD: 'FGSM'
+    TYPE: 'All'
+    FRAME: 32
 
   DATA:
     TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
@@ -44,9 +49,9 @@ CONFIG:
     KEEP_ASPECT_RATIO: False
 
   MODEL:
-    NAME: 'i3d_nl10_resnet101_v1_custom'
+    NAME: 'i3d_resnet50_v1_custom'
     PRETRAINED: True
-    LOAD: True
+    LOAD: False
     LOAD_PATH: 'logs/i3d/i3d_nl10_101_baseline.pth'
 
   LOG:

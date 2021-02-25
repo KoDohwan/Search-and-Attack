@@ -56,46 +56,6 @@ def load_model(model, cfg, load_fc=True):
 
     return model, None
 
-# def load_model(model, cfg, load_fc=True):
-#     """
-#     Load pretrained model weights.
-#     """
-#     if os.path.isfile(cfg.CONFIG.MODEL.LOAD_PATH):
-#         print("=> loading checkpoint '{}'".format(cfg.CONFIG.MODEL.LOAD_PATH))
-#         if cfg.DDP_CONFIG.GPU is None:
-#             checkpoint = torch.load(cfg.CONFIG.MODEL.LOAD_PATH)
-#         else:
-#             # Map model to be loaded to specified single gpu.
-#             loc = 'cuda:{}'.format(cfg.DDP_CONFIG.GPU)
-#             checkpoint = torch.load(cfg.CONFIG.MODEL.LOAD_PATH, map_location=loc)
-#         model_dict = model.state_dict()
-#         if not load_fc:
-#             del model_dict['module.fc.weight']
-#             del model_dict['module.fc.bias']
-
-#         pretrained_dict = {}
-#         unused_dict = {}
-#         not_found_dict = {}
-#         for k, v in checkpoint.items():
-#             _k = 'module.' + k
-#             if _k in model_dict:
-#                 pretrained_dict[_k] = v
-#             else:
-#                 unused_dict[_k] = v
-#         for k, v in model_dict.items():
-#             _k = k[7:]
-#             if not _k in checkpoint:
-#                 not_found_dict[_k] = v
-#         print("unused model layers:", unused_dict.keys())
-#         print("not found layers:", not_found_dict.keys())
-#         model_dict.update(pretrained_dict)
-#         model.load_state_dict(model_dict)
-#         print("=> loaded checkpoint '{}' (epoch {})".format(cfg.CONFIG.MODEL.LOAD_PATH, -1))
-#     else:
-#         print("=> no checkpoint found at '{}'".format(cfg.CONFIG.MODEL.LOAD_PATH))
-
-#     return model, None
-
 def save_model(model, optimizer, epoch, cfg):
     # pylint: disable=line-too-long
     """

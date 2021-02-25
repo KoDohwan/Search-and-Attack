@@ -5,11 +5,10 @@ import numpy as np
 from decord import VideoReader, cpu
 
 import torch
-from torch.utils.data import Dataset
 from torchvision import datasets, transforms
-import videotransforms
+# import videotransforms
 
-from ..transforms.videotransforms import video_transforms, volume_transforms
+from ..transforms.videotransforms import video_transforms, volume_transforms, video_transforms2
 from .multigrid_helper import multiGridSampler, MultiGridBatchSampler
 
 from ucf_dataset import UCF as Dataset
@@ -230,18 +229,15 @@ class VideoClsDataset(Dataset):
             return len(self.test_dataset)
 
 def build_dataloader(cfg):
-    train_transforms = transforms.Compose([transforms.Resize((128, 171)),
-                                        transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((112, 112)),
-                                        transforms.RandomResizedCrop(112, (0.75, 1.25)),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
+    train_transforms = transforms.Compose([video_transforms.ResizeVideo((128, 171)),
+                                        video_transforms.RandomHorizontalFlipVideo(),
+                                        video_transforms.RandomResizedCropVideo(112, (0.75, 1.25)),
+                                        video_transforms.NormalizeVideo(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
     train_dataset = Dataset(cfg.CONFIG.DATA.TRAIN_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, train_transforms)
 
-    val_transforms = transforms.Compose([transforms.Resize((128, 171)),
-                                        transforms.CenterCrop((112, 112)),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
+    val_transforms = transforms.Compose([video_transforms.ResizeVideo((128, 171)),
+                                        video_transforms.CenterCropVideo((112, 112)),
+                                        video_transforms.NormalizeVideo(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
     val_dataset = Dataset(cfg.CONFIG.DATA.VAL_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, val_transforms)
 
     if cfg.DDP_CONFIG.DISTRIBUTED:
@@ -266,10 +262,9 @@ def build_dataloader(cfg):
     return train_loader, val_loader, train_sampler, val_sampler, mg_sampler
 
 def build_dataloader_val(cfg):
-    val_transforms = transforms.Compose([transforms.Resize((128, 171)),
-                                        transforms.CenterCrop((112, 112)),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
+    val_transforms = transforms.Compose([video_transforms.ResizeVideo((128, 171)),
+                                        video_transforms.CenterCropVideo((112, 112)),
+                                        video_transforms.NormalizeVideo(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
     val_dataset = Dataset(cfg.CONFIG.DATA.VAL_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, val_transforms)
 
     if cfg.DDP_CONFIG.DISTRIBUTED:

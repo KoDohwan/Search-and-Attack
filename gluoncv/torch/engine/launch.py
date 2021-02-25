@@ -4,7 +4,7 @@ import torch.distributed as dist
 import torch.backends.cudnn as cudnn
 import torch.multiprocessing as mp
 import os
-
+import warnings
 def get_local_ip_and_match(ip_list):
     import socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -18,11 +18,15 @@ def get_local_ip_and_match(ip_list):
 
 
 def spawn_workers(main, cfg):
+    warnings.filterwarnings("ignore")
     """Use torch.multiprocessing.spawn to launch distributed processes"""
     visible_gpu = ''
-    for gpu in cfg.CONFIG.VISIBLE_GPU:
-        visible_gpu += f'{gpu},'
-    visible_gpu = visible_gpu[:-1]
+    if isinstance(cfg.CONFIG.VISIBLE_GPU, int):
+        visible_gpu = f'{cfg.CONFIG.VISIBLE_GPU}'
+    else:
+        for gpu in cfg.CONFIG.VISIBLE_GPU:
+            visible_gpu += f'{gpu},'
+        visible_gpu = visible_gpu[:-1]
     os.environ["CUDA_DEVICE_ORDER"] = 'PCI_BUS_ID'
     os.environ["CUDA_VISIBLE_DEVICES"] = visible_gpu
     if cfg.DDP_CONFIG.AUTO_RANK_MATCH:

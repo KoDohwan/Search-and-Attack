@@ -23,6 +23,8 @@ def train_classification(base_iter, model, dataloader, epoch, criterion, optimiz
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
+    if cfg.CONFIG.MODEL.NAME == 'lrcn':
+        model.module.Lstm.reset_hidden_state()
 
     model.train()
     end = time.time()
@@ -38,6 +40,8 @@ def train_classification(base_iter, model, dataloader, epoch, criterion, optimiz
         prec1, prec5 = accuracy(outputs.data, train_label, topk=(1, 5))
 
         optimizer.zero_grad()
+        if cfg.CONFIG.MODEL.NAME == 'lrcn':
+            model.module.Lstm.reset_hidden_state()
         loss.backward()
         optimizer.step()
 
@@ -76,6 +80,8 @@ def validation_classification(model, val_dataloader, epoch, criterion, cfg, writ
     top1 = AverageMeter()
     top5 = AverageMeter()
     model.eval()
+    if cfg.CONFIG.MODEL.NAME == 'lrcn':
+        model.module.Lstm.reset_hidden_state()
 
     end = time.time()
     with torch.no_grad():
@@ -84,6 +90,9 @@ def validation_classification(model, val_dataloader, epoch, criterion, cfg, writ
             val_batch = data[0].cuda()
             val_label = data[1].cuda()
             val_label = val_label.long().view(-1)
+
+            if cfg.CONFIG.MODEL.NAME == 'lrcn':
+                model.module.Lstm.reset_hidden_state()
             outputs = model(val_batch)
 
             loss = criterion(outputs, val_label)
@@ -141,9 +150,14 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
     top5 = AverageMeter()
     TAP = AverageMeter()
     frames = AverageMeter()
+    grad_ratio = AverageMeter()
+    grad_var = AverageMeter()
     model.eval()
+    if cfg.CONFIG.MODEL.NAME == 'lrcn':
+        model.module.Lstm.reset_hidden_state()
+        model.module.Lstm.train()
 
-    atk = ISA(model, eps=2/255, alpha=1/255, steps=8, random_start=False, iterative=True)
+    atk = ISA(cfg, model, eps=2/255, alpha=0.5/255)
 
     perturbation = 0.
     sum_frames = 0
@@ -156,7 +170,9 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         val_label = val_label.long().view(-1)
         total += val_batch.shape[0]
 
-        adv_batch, pert, num_frames = atk(val_batch, val_label)
+        if cfg.CONFIG.MODEL.NAME == 'lrcn':
+            model.module.Lstm.reset_hidden_state()
+        adv_batch, pert, num_frames, ratio, var = atk(val_batch, val_label)
 
         outputs = model(adv_batch)
 
@@ -166,6 +182,8 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         losses.update(loss.item(), val_batch.size(0))
         top1.update(prec1a.item(), val_batch.size(0))
         top5.update(prec5a.item(), val_batch.size(0))
+        grad_ratio.update(ratio, val_batch.size(0) if ratio != 0 else 0)
+        grad_var.update(var, val_batch.size(0))
         TAP.update(pert / val_batch.size(0), val_batch.size(0))
         frames.update(num_frames / val_batch.size(0), val_batch.size(0))
         batch_time.update(time.time() - end)
@@ -179,7 +197,7 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
             print(print_string)
             print_string = f'loss: {losses.avg:.5f}'
             print(print_string)
-            print_string =  f'TAP: {TAP.sum}, avg_frames: {frames.avg:.2f}, MAP: {TAP.sum / (frames.sum * 224 * 224):.4f}'
+            print_string =  f'TAP: {TAP.sum}, avg_frames: {frames.avg:.2f}, grad_var: {grad_var.avg:.4f}, grad_ratio: {grad_ratio.avg:.2f}%'
             print(print_string)
             print_string = f'Top-1 accuracy: {top1.avg:.2f}%, Top-5 accuracy: {top5.avg:.2f}%'
             print(print_string)
@@ -189,10 +207,10 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         os.makedirs(eval_path)
 
     with open(os.path.join(eval_path, "{}.txt".format(cfg.DDP_CONFIG.GPU_WORLD_RANK)), 'w') as f:
-        f.write(f'{losses.avg} {top1.avg} {top5.avg} {TAP.sum} {frames.sum} {frames.avg}\n')
+        f.write(f'{losses.avg} {top1.avg} {top5.avg} {TAP.sum} {frames.sum} {frames.avg} {grad_ratio.avg} {grad_var.avg}\n')
     torch.distributed.barrier()
 
-    loss_lst, top1_lst, top5_lst, tap_lst, frames_sum_lst, frames_avg_lst = [], [], [], [], [], []
+    loss_lst, top1_lst, top5_lst, tap_lst, frames_sum_lst, frames_avg_lst, grad_ratio_lst, grad_var_lst = [], [], [], [], [], [], [], []
     if cfg.DDP_CONFIG.GPU_WORLD_RANK == 0 and writer is not None:
         print("Collecting validation numbers")
         for x in range(cfg.DDP_CONFIG.GPU_WORLD_SIZE):
@@ -204,13 +222,20 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
             tap_lst.append(data[3])
             frames_sum_lst.append(data[4])
             frames_avg_lst.append(data[5])
+            grad_ratio_lst.append(data[6])
+            grad_var_lst.append(data[7])
+
+        fout = open('temp.txt', 'a')
         print("Global result:")
+        fout.write(f'{cfg.CONFIG.MODEL.NAME} {cfg.CONFIG.ADV.METHOD} {cfg.CONFIG.ADV.TYPE} {cfg.CONFIG.ADV.FRAME}\n')
         print_string = f'loss: {np.mean(loss_lst):.5f}'
         print(print_string)
-        print_string = f'TAP: {np.sum(tap_lst)}, avg_frames: {np.mean(frames_avg_lst):.2f}, MAP: {np.sum(tap_lst) / (np.sum(frames_sum_lst) * 224 * 224):.4f}'
+        print_string = f'TAP: {np.sum(tap_lst)}, avg_frames: {np.mean(frames_avg_lst):.2f}, grad_var: {np.mean(grad_var_lst):.4f}, grad_ratio: {np.mean(grad_ratio_lst):.2f}%'
         print(print_string)
+        fout.write(print_string + '\n')
         print_string = f'Top-1 accuracy: {np.mean(top1_lst):.2f}%, Top-5 accuracy: {np.mean(top5_lst):.2f}%'
         print(print_string)
+        fout.write(print_string + '\n\n')
         writer.add_scalar('val_loss_epoch', np.mean(loss_lst), epoch)
         writer.add_scalar('val_top1_acc_epoch', np.mean(top1_lst), epoch)
         writer.add_scalar('val_top5_acc_epoch', np.mean(top5_lst), epoch)

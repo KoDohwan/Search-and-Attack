@@ -22,7 +22,10 @@ from torchvision import datasets, transforms
 import videotransforms
 from ucf_dataset import UCF as Dataset
 
+import warnings
+
 def main_worker(cfg):
+    warnings.filterwarnings("ignore")
     # create tensorboard and logs
     if cfg.DDP_CONFIG.GPU_WORLD_RANK == 0:
         tb_logdir = build_log_dir(cfg)
@@ -42,6 +45,8 @@ def main_worker(cfg):
         model, _ = load_model(model, cfg, load_fc=True)
 
     criterion = nn.CrossEntropyLoss().cuda()
+    if cfg.CONFIG.MODEL.NAME == 'lrcn':
+        criterion = nn.NLLLoss().cuda()
 
     # adversarial_classification(model, val_loader, -1, criterion, cfg, writer)
     validation_classification(model, val_loader, -1, criterion, cfg, writer)

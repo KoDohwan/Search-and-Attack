@@ -10,7 +10,7 @@ import copy
 from ..attack import Attack
 
 class PGD(Attack):
-    def __init__(self, model, eps=0.3, alpha=2/255, steps=40, random_start=False):
+    def __init__(self, cfg, model, eps=0.3, alpha=2/255, steps=40, random_start=False):
         super(PGD, self).__init__("PGD", model)
         self.eps = eps
         self.alpha = alpha
@@ -18,9 +18,6 @@ class PGD(Attack):
         self.random_start = random_start
 
     def forward(self, images, labels):
-        r"""
-        Overridden.
-        """
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
@@ -119,8 +116,8 @@ class PGD(Attack):
         return adv_images, torch.norm(adv_images - images, p=1).cpu().item(), num_frames, aap
 
 class PGD2(Attack):
-    def __init__(self, model, eps=0.3, alpha=2/255, steps=40, random_start=False):
-        super(PGD2, self).__init__("PGD2", model)
+    def __init__(self, cfg, model, eps=0.3, alpha=2/255, steps=40, random_start=False):
+        super(PGD2, self).__init__("PGD2", cfg, model)
         self.eps = (eps / self.std).view((3, 1, 1, 1)).to(self.device)
         self.alpha = (alpha / self.std).view((3, 1, 1, 1)).to(self.device)
         self.steps = steps
@@ -132,11 +129,12 @@ class PGD2(Attack):
         labels = self._transform_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
+        if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
+            loss = nn.NLLLoss().cuda()
 
         adv_images = images.clone().detach()
 
         if self.random_start:
-            # Starting at a uniformly random point
             for i in range(images.shape[0]):
                 # diff = torch.empty_like(adv_images).uniform_(-self.eps, self.eps)[i, :, idx_list[i], :, :]
                 diff = (2 * torch.rand(images.shape, device=self.device) * self.eps - self.eps)[i, :, idx_list[i], :, :]
@@ -146,6 +144,9 @@ class PGD2(Attack):
         idx_set = [set() for _ in range(images.shape[0])]
 
         for i in range(self.steps):
+            if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
+                self.model.module.Lstm.reset_hidden_state()
+                self.model.module.Lstm.train()
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
             cost = loss(outputs, labels)

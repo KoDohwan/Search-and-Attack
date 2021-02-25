@@ -11,7 +11,7 @@ DDP_CONFIG:
   DISTRIBUTED: True
 
 CONFIG:
-  VISIBLE_GPU: 0,1,2,3
+  VISIBLE_GPU: 0,1,2,3,4,5,6,7
 
   TRAIN:
     EPOCH_NUM: 100
@@ -23,12 +23,17 @@ CONFIG:
     USE_WARMUP: False
     WARMUP_EPOCHS: 5
     WARMUP_END_LR: 0.05
-    LR_MILESTONE: [10, 30, 50]
+    LR_MILESTONE: [20, 40, 60]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 80
+    BATCH_SIZE: 20
+
+  ADV:
+    METHOD: 'FGSM'
+    TYPE: 'All'
+    FRAME: 32
 
   DATA:
     TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
@@ -49,7 +54,7 @@ CONFIG:
     NAME: 'r3d_18'
     PRETRAINED: False
     LOAD: False
-    LOAD_PATH: 'logs/r3d/r3d_baseline.pth'
+    LOAD_PATH: 'logs/r3d/r3d_18_baseline.pth'
 
   LOG:
     BASE_PATH: './logs/r3d'

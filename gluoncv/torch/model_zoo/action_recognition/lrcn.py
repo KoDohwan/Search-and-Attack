@@ -5,11 +5,12 @@ from tqdm import tqdm
 import torchvision.transforms as transforms
 
 class lrcn(nn.Module):
-    def __init__(self, latent_dim, hidden_size, lstm_layers, bidirectional, n_class):
+    def __init__(self, cfg):
         super(lrcn, self).__init__()
-        self.conv = CNN_resnet(latent_dim)
-        self.Lstm = Lstm(latent_dim, hidden_size, lstm_layers, bidirectional)
-        self.output_layer = nn.Linear(2 * hidden_size if bidirectional==True else hidden_size, n_class)
+        self.conv = CNN_resnet(cfg.CONFIG.MODEL.LATENT_DIM)
+        self.Lstm = Lstm(cfg.CONFIG.MODEL.LATENT_DIM, cfg.CONFIG.MODEL.HIDDEN_SIZE, cfg.CONFIG.MODEL.LSTM_LAYERS, cfg.CONFIG.MODEL.BIDIRECTIONAL)
+        # self.output_layer = nn.Linear(2 * cfg.CONFIG.MODEL.HIDDEN_SIZE if cfg.CONFIG.MODEL.BIDIRECTIONAL==True else cfg.CONFIG.MODEL.HIDDEN_SIZE, cfg.CONFIG.DATA.NUM_CLASSES)
+        self.output_layer = nn.Sequential(nn.Linear(2 * cfg.CONFIG.MODEL.HIDDEN_SIZE if cfg.CONFIG.MODEL.BIDIRECTIONAL==True else cfg.CONFIG.MODEL.HIDDEN_SIZE, cfg.CONFIG.DATA.NUM_CLASSES), nn.Softmax())
 
     def forward(self, x):
         x = x.transpose(1, 2)
@@ -18,18 +19,16 @@ class lrcn(nn.Module):
         conv_output = self.conv(conv_input)
         lstm_input = conv_output.view(batch_size, timesteps, -1)
         lstm_output = self.Lstm(lstm_input)
-        output = torch.mean(self.output_layer(lstm_output), 1)
-
+        # output = torch.mean(self.output_layer(lstm_output), 1)
+        output = torch.log(torch.mean(self.output_layer(lstm_output), 1))
         return output
 
 class CNN_resnet(nn.Module):
     def __init__(self, latent_dim):
         super(CNN_resnet, self).__init__()
         self.conv = models.resnet152(pretrained=True)
+        print('Pretrained Model Weight Loaded')
         #self.conv = models.googlenet(pretrained=True)
-        # ====== freezing all of the layers ======
-        for param in self.conv.parameters():
-            param.requires_grad = False
         # ====== changing the last FC layer to an output with the size we need. this layer is un freezed ======
         self.conv.fc = nn.Linear(self.conv.fc.in_features, latent_dim)
 

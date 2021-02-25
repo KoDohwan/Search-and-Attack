@@ -11,8 +11,8 @@ DDP_CONFIG:
   DISTRIBUTED: True
 
 CONFIG:
-  VISIBLE_GPU: 0,1,2,3
-  
+  VISIBLE_GPU: 0,1,2,3,4,5,6,7
+
   TRAIN:
     EPOCH_NUM: 100
     BATCH_SIZE: 10
@@ -26,7 +26,12 @@ CONFIG:
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 50
+    BATCH_SIZE: 10
+
+  ADV:
+    METHOD: 'FGSM'
+    TYPE: 'All'
+    FRAME: 32
 
   DATA:
     TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
@@ -47,7 +52,7 @@ CONFIG:
     NAME: 'r2plus1d_18'
     PRETRAINED: False
     LOAD: True
-    LOAD_PATH: 'logs/r2plus1d/r2plus1d_18.pth'
+    LOAD_PATH: 'logs/r2plus1d/r2plus1d_18_baseline.pth'
 
   LOG:
     BASE_PATH: './logs/r2plus1d'

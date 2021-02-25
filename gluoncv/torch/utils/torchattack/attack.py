@@ -10,7 +10,7 @@ class Attack(object):
         It temporarily changes the model's training mode to `test`
         by `.eval()` only during an attack process.
     """
-    def __init__(self, name, model):
+    def __init__(self, name, cfg, model):
         r"""
         Initializes internal attack state.
 
@@ -20,6 +20,7 @@ class Attack(object):
         """
 
         self.attack = name
+        self.cfg = cfg
         self.model = model
         self.model_name = str(model).split("(")[0]
 

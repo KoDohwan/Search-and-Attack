@@ -87,16 +87,21 @@ class FGSM(Attack):
         return adv_images, torch.norm(adv_images - images, p=1)
 
 class FGSM2(Attack):
-    def __init__(self, model, eps):
-        super(FGSM2, self).__init__("FGSM2", model)
+    def __init__(self, cfg, model, eps):
+        super(FGSM2, self).__init__("FGSM2", cfg, model)
         self.eps = (eps / self.std).view((3, 1, 1, 1)).to(self.device)
 
     def forward(self, images, labels, idx_list):
+        if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
+            self.model.module.Lstm.reset_hidden_state()
+            self.model.module.Lstm.train()
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
+        if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
+            loss = nn.NLLLoss().cuda()
 
         images.requires_grad = True
         outputs = self.model(images)
