@@ -1,4 +1,4 @@
-# python adversarial_attack.py --config-file=config_i3d.yaml
+# python adversarial_attack.py --config-file=./config/i3d/config_i3d_0.yaml
 # python adversarial_attack.py --config-file=./config/i3d/config_i3d_1.yaml
 # python adversarial_attack.py --config-file=./config/i3d/config_i3d_2.yaml
 # python adversarial_attack.py --config-file=./config/i3d/config_i3d_3.yaml
@@ -12,7 +12,7 @@
 # python adversarial_attack.py --config-file=./config/i3d/config_i3d_11.yaml
 # python adversarial_attack.py --config-file=./config/i3d/config_i3d_12.yaml
 
-# python adversarial_attack.py --config-file=config_r3d.yaml
+# python adversarial_attack.py --config-file=./config/r3d/config_r3d_0.yaml
 # python adversarial_attack.py --config-file=./config/r3d/config_r3d_1.yaml
 # python adversarial_attack.py --config-file=./config/r3d/config_r3d_2.yaml
 # python adversarial_attack.py --config-file=./config/r3d/config_r3d_3.yaml
@@ -26,7 +26,7 @@
 # python adversarial_attack.py --config-file=./config/r3d/config_r3d_11.yaml
 # python adversarial_attack.py --config-file=./config/r3d/config_r3d_12.yaml
 
-# python adversarial_attack.py --config-file=config_r2plus1d.yaml
+# python adversarial_attack.py --config-file=./config/r2plus1d/config_r2plus1d_0.yaml
 # python adversarial_attack.py --config-file=./config/r2plus1d/config_r2plus1d_1.yaml
 # python adversarial_attack.py --config-file=./config/r2plus1d/config_r2plus1d_2.yaml
 # python adversarial_attack.py --config-file=./config/r2plus1d/config_r2plus1d_3.yaml
@@ -40,16 +40,34 @@
 # python adversarial_attack.py --config-file=./config/r2plus1d/config_r2plus1d_11.yaml
 # python adversarial_attack.py --config-file=./config/r2plus1d/config_r2plus1d_12.yaml
 
-python adversarial_attack.py --config-file=config_lrcn.yaml 
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_1.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_2.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_3.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_4.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_5.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_6.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_7.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_8.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_9.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_10.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_11.yaml
-python adversarial_attack.py --config-file=./config/lrcn/config_lrcn_12.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_0.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_1.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_2.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_3.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_4.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_5.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_6.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_7.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_8.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_9.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_10.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_11.yaml
+# python adversarial_attack.py --config-file=./config/slowfast/config_slowfast_12.yaml
+
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_0.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_1.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_2.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_3.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_4.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_5.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_6.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_7.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_8.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_9.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_10.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_11.yaml
+# python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_12.yaml
+
+python train.py --config-file=config_ircsnv2_1.yaml
+python train.py --config-file=config_slowfast.yaml
+python train.py --config-file=config_i3d.yaml

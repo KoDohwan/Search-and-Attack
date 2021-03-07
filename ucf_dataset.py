@@ -30,9 +30,9 @@ def video_to_tensor(pic):
     """
     return torch.from_numpy(pic.transpose([3,0,1,2]))
 
-def load_rgb_frames(root, vid, start_frame, num_clip, frame_rate):
-    frames = torch.zeros((num_clip, 3, 256, 342))
-    for i in range(num_clip):
+def load_rgb_frames(root, vid, start_frame, clip_len, frame_rate):
+    frames = torch.zeros((clip_len, 3, 256, 342))
+    for i in range(clip_len):
         idx = start_frame + i * frame_rate
         frame_id = 'frame' + str(idx).zfill(6) + '.jpg'
         img = cv2.imread(os.path.join(root, vid, frame_id))[:, :, [2, 1, 0]]
@@ -66,16 +66,16 @@ class UCF(data_utl.Dataset):
         self.root = root
 
     def __getitem__(self, index):
-        num_clip = 32
+        clip_len = 32
         vid, label, num_frames = self.data[index]
 
-        frame_rate = int(np.floor(float(num_frames) / float(num_clip)))
+        frame_rate = int(np.floor(float(num_frames) / float(clip_len)))
 
         # start_frame = 1
-        # start_frame = random.randint(1, num_frames - num_clip - 1)
-        start_frame = random.randint(1, num_frames - num_clip * frame_rate + 1)
+        # start_frame = random.randint(1, num_frames - clip_len - 1)
+        start_frame = random.randint(1, num_frames - clip_len * frame_rate + 1)
 
-        imgs = load_rgb_frames(self.root, vid, start_frame, num_clip, frame_rate)
+        imgs = load_rgb_frames(self.root, vid, start_frame, clip_len, frame_rate)
         frames = self.transforms(imgs)
 
         return frames, torch.from_numpy(label)

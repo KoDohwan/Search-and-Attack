@@ -3,8 +3,8 @@ DDP_CONFIG:
   WORLD_RANK: 0
   GPU_WORLD_SIZE: 8
   GPU_WORLD_RANK: 0
-  DIST_URL: 'tcp://163.152.29.65:23456'
-  WOLRD_URLS: ['163.152.29.65']
+  DIST_URL: 'tcp://163.152.29.64:23456'
+  WOLRD_URLS: ['163.152.29.64']
   AUTO_RANK_MATCH: True
   DIST_BACKEND: 'nccl'
   GPU: 0
@@ -28,18 +28,18 @@ CONFIG:
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 20
+    BATCH_SIZE: 1
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'All'
-    FRAME: 32
+    TYPE: 'Greedy Logit'
+    FRAME: 8
 
   DATA:
-    TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/testlist01_new.txt'
-    DATA_PATH: '../../../../hub_data/video/ucf101'
-    CLASS_IDX_PATH: '../../../../hub_data/video/ucfTrainTestlist/classInd.txt'
+    TRAIN_ANNO_PATH: '../../data/video/ucfTrainTestlist/trainlist01.txt'
+    VAL_ANNO_PATH: '../../data/video/ucfTrainTestlist/testlist01_new.txt'
+    DATA_PATH: '../../data/video/ucf101'
+    CLASS_IDX_PATH: '../../data/video/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
     CLIP_LEN: 32
     FRAME_RATE: 2
@@ -53,8 +53,8 @@ CONFIG:
   MODEL:
     NAME: 'r3d_18'
     PRETRAINED: False
-    LOAD: False
-    LOAD_PATH: 'logs/r3d/r3d_18_baseline.pth'
+    LOAD: True
+    LOAD_PATH: 'logs/r3d/r3d_18_ucf.pth'
 
   LOG:
     BASE_PATH: './logs/r3d'

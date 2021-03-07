@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 
 
-__all__ = ['ResNet_IRCSNv2', 'ircsn_v2_resnet152_f32s2_kinetics400']
+__all__ = ['ResNet_IRCSNv2', 'ircsn_v2_resnet152_f32s2_custom']
 
 
 eps = 1e-3
@@ -188,7 +188,7 @@ class ResNet_IRCSNv2(nn.Module):
         return logits
 
 
-def ircsn_v2_resnet152_f32s2_kinetics400(cfg):
+def ircsn_v2_resnet152_f32s2_custom(cfg):
     model = ResNet_IRCSNv2(Bottleneck_IRCSNv2,
                            num_classes=cfg.CONFIG.DATA.NUM_CLASSES,
                            block_nums=[3, 8, 36, 3],
@@ -197,6 +197,13 @@ def ircsn_v2_resnet152_f32s2_kinetics400(cfg):
 
     if cfg.CONFIG.MODEL.PRETRAINED:
         from ..model_store import get_model_file
-        model.load_state_dict(torch.load(get_model_file('ircsn_v2_resnet152_f32s2_kinetics400',
-                                                        tag=cfg.CONFIG.MODEL.PRETRAINED)))
+        state_dict = torch.load(get_model_file('ircsn_v2_resnet152_f32s2_kinetics400', tag=cfg.CONFIG.MODEL.PRETRAINED))
+        for k in list(state_dict.keys()):
+            # retain only backbone up to before the classification layer
+            if k.startswith('out_fc'):
+                del state_dict[k]
+
+        msg = model.load_state_dict(state_dict, strict=False)
+        assert set(msg.missing_keys) == {'out_fc.weight', 'out_fc.bias'}
+        print("=> initialized from a ircsn_v2_resnet152 model pretrained on Kinetcis400 dataset")
     return model

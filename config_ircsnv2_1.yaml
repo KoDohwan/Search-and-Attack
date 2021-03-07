@@ -15,18 +15,20 @@ CONFIG:
 
   TRAIN:
     EPOCH_NUM: 100
-    BATCH_SIZE: 20
+    BATCH_SIZE: 30
     LR: 0.005
     MOMENTUM: 0.9
     W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
+    WARMUP_EPOCHS: 5
+    WARMUP_END_LR: 0.05
     LR_MILESTONE: [20, 40, 60]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 5
+    BATCH_SIZE: 20
 
   ADV:
     METHOD: 'FGSM'
@@ -49,14 +51,14 @@ CONFIG:
     KEEP_ASPECT_RATIO: False
 
   MODEL:
-    NAME: 'r2plus1d_18'
-    PRETRAINED: False
-    LOAD: True
-    LOAD_PATH: 'logs/r2plus1d/r2plus1d_18_ucf.pth'
+    NAME: 'ircsn_v2_resnet152_f32s2_custom'
+    PRETRAINED: True
+    LOAD: False
+    LOAD_PATH: 'logs/ircsnv2/ircsnv2_ucf.pth'
 
   LOG:
-    BASE_PATH: './logs/r2plus1d'
+    BASE_PATH: './logs/ircsnv2'
     LOG_DIR: 'tb_log'
     SAVE_DIR: 'checkpoints'
-    EVAL_DIR: './logs/r2plus1d/eval'
+    EVAL_DIR: './logs/ircsnv2/eval'
     SAVE_FREQ: 1

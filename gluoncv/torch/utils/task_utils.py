@@ -157,7 +157,7 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         model.module.Lstm.reset_hidden_state()
         model.module.Lstm.train()
 
-    atk = ISA(cfg, model, eps=2/255, alpha=0.5/255)
+    atk = ISA(cfg, model)
 
     perturbation = 0.
     sum_frames = 0
@@ -227,7 +227,7 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
 
         fout = open('temp.txt', 'a')
         print("Global result:")
-        fout.write(f'{cfg.CONFIG.MODEL.NAME} {cfg.CONFIG.ADV.METHOD} {cfg.CONFIG.ADV.TYPE} {cfg.CONFIG.ADV.FRAME}\n')
+        fout.write(f'{cfg.CONFIG.MODEL.NAME}/{cfg.CONFIG.ADV.METHOD}/{cfg.CONFIG.ADV.TYPE}/{cfg.CONFIG.ADV.FRAME}\n')
         print_string = f'loss: {np.mean(loss_lst):.5f}'
         print(print_string)
         print_string = f'TAP: {np.sum(tap_lst)}, avg_frames: {np.mean(frames_avg_lst):.2f}, grad_var: {np.mean(grad_var_lst):.4f}, grad_ratio: {np.mean(grad_ratio_lst):.2f}%'

@@ -10,3 +10,4 @@ from .resnet import *
 from .tpn import *
 from .ircsnv2 import *
 from .lrcn import lrcn
+from .s3d import s3d

@@ -48,8 +48,8 @@ def main_worker(cfg):
     if cfg.CONFIG.MODEL.NAME == 'lrcn':
         criterion = nn.NLLLoss().cuda()
 
-    # adversarial_classification(model, val_loader, -1, criterion, cfg, writer)
-    validation_classification(model, val_loader, -1, criterion, cfg, writer)
+    adversarial_classification(model, val_loader, -1, criterion, cfg, writer)
+    # validation_classification(model, val_loader, -1, criterion, cfg, writer)
 
     if writer is not None:
         writer.close()

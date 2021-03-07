@@ -3,8 +3,8 @@ DDP_CONFIG:
   WORLD_RANK: 0
   GPU_WORLD_SIZE: 8
   GPU_WORLD_RANK: 0
-  DIST_URL: 'tcp://163.152.29.65:23457'
-  WOLRD_URLS: ['163.152.29.65']
+  DIST_URL: 'tcp://163.152.29.64:23457'
+  WOLRD_URLS: ['163.152.29.64']
   AUTO_RANK_MATCH: True
   DIST_BACKEND: 'nccl'
   GPU: 0
@@ -16,8 +16,8 @@ CONFIG:
   TRAIN:
     EPOCH_NUM: 100
     BATCH_SIZE: 60
-    LR: 0.05
-    MOMENTUM: 0.95
+    LR: 0.005
+    MOMENTUM: 0.9
     W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
@@ -30,14 +30,14 @@ CONFIG:
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'All'
-    FRAME: 32
+    TYPE: 'Greedy Logit'
+    FRAME: 8
 
   DATA:
-    TRAIN_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: '../../../../hub_data/video/ucfTrainTestlist/testlist01_new.txt'
-    DATA_PATH: '../../../../hub_data/video/ucf101'
-    CLASS_IDX_PATH: '../../../../hub_data/video/ucfTrainTestlist/classInd.txt'
+    TRAIN_ANNO_PATH: '../../data/video/ucfTrainTestlist/trainlist01.txt'
+    VAL_ANNO_PATH: '../../data/video/ucfTrainTestlist/testlist01_new.txt'
+    DATA_PATH: '../../data/video/ucf101'
+    CLASS_IDX_PATH: '../../data/video/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
     CLIP_LEN: 32
     FRAME_RATE: 2
@@ -52,7 +52,7 @@ CONFIG:
     NAME: 'i3d_resnet50_v1_custom'
     PRETRAINED: True
     LOAD: False
-    LOAD_PATH: 'logs/i3d/i3d_nl10_101_baseline.pth'
+    LOAD_PATH: 'logs/i3d/i3d_50_ucf.pth'
 
   LOG:
     BASE_PATH: './logs/i3d'
