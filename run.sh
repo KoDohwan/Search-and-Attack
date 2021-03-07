@@ -68,6 +68,8 @@
 # python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_11.yaml
 # python adversarial_attack.py --config-file=./config/ircsnv2/config_ircsnv2_12.yaml
 
-python train.py --config-file=config_ircsnv2_1.yaml
-python train.py --config-file=config_slowfast.yaml
-python train.py --config-file=config_i3d.yaml
+python adversarial_attack.py --config-file=config_i3d.yaml
+python adversarial_attack.py --config-file=config_r3d.yaml
+python adversarial_attack.py --config-file=config_r2plus1d.yaml
+python adversarial_attack.py --config-file=config_slowfast.yaml
+python adversarial_attack.py --config-file=config_ircsnv2.yaml

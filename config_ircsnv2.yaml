@@ -28,11 +28,11 @@ CONFIG:
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 10
+    BATCH_SIZE: 20
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'Greedy Loss'
+    TYPE: 'Greedy Loss2'
     FRAME: 8
 
   DATA:

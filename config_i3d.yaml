@@ -30,7 +30,7 @@ CONFIG:
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'Greedy Logit'
+    TYPE: 'Greedy Loss2'
     FRAME: 8
 
   DATA:
@@ -51,7 +51,7 @@ CONFIG:
   MODEL:
     NAME: 'i3d_resnet50_v1_custom'
     PRETRAINED: True
-    LOAD: False
+    LOAD: True
     LOAD_PATH: 'logs/i3d/i3d_50_ucf.pth'
 
   LOG:

@@ -90,6 +90,17 @@ class ISA(Attack):
                     idx_left[j].remove(max_idx[j])
                 atk_images, _, _ = atk(atk_images, labels, idx_list)
                 print(idx_list)
+        elif self.cfg.CONFIG.ADV.TYPE == 'Greedy Loss2':
+            idx_list = [[] for _ in range(images.shape[0])]
+            loss_array = np.zeros((32, images.shape[0]))
+            atk = FGSM2(self.cfg, self.model, eps=2/255)
+            criterion = nn.CrossEntropyLoss(reduction='none')
+            adv_images = images.clone().detach()
+            for i in range(32):
+                temp_images, _, _ = atk(adv_images, labels, [[i] for _ in range(images.shape[0])])
+                loss_array[i] = criterion(self.model(temp_images), labels).cpu().detach().numpy()
+            loss_array = np.transpose(loss_array, (1, 0))
+            idx_list = np.argsort(loss_array)[:, -self.cfg.CONFIG.ADV.FRAME:].tolist()
         elif self.cfg.CONFIG.ADV.TYPE == 'Greedy Logit':
             idx_left = [list(range(32)) for _ in range(images.shape[0])]
             atk = FGSM2(self.cfg, self.model, eps=2/255)
@@ -102,7 +113,7 @@ class ISA(Attack):
             max_list = [-math.inf for _ in range(batch_size)]
             logits_list = torch.Tensor(batch_size, 32, 101)
             logits_diff = torch.Tensor(batch_size, 31)
-            for i in range(32):     
+            for i in range(32):
                 temp_list = [[i] for _ in range(batch_size)]
                 atk_images, _, _ = atk(images, labels, temp_list)
                 logits = self.model(atk_images)
