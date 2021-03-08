@@ -28,7 +28,7 @@ CONFIG:
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 20
+    BATCH_SIZE: 10
 
   ADV:
     METHOD: 'FGSM'
@@ -36,10 +36,10 @@ CONFIG:
     FRAME: 8
 
   DATA:
-    TRAIN_ANNO_PATH: '../../data/video/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: '../../data/video/ucfTrainTestlist/testlist01_new.txt'
-    DATA_PATH: '../../data/video/ucf101'
-    CLASS_IDX_PATH: '../../data/video/ucfTrainTestlist/classInd.txt'
+    TRAIN_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/trainlist01.txt'
+    VAL_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/testlist01_new.txt'
+    DATA_PATH: '../../data/video/UCF101/ucf101'
+    CLASS_IDX_PATH: '../../data/video/UCF101/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
     CLIP_LEN: 32
     FRAME_RATE: 2
