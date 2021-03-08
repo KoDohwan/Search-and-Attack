@@ -129,8 +129,6 @@ class PGD2(Attack):
         labels = self._transform_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
-        if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
-            loss = nn.NLLLoss().cuda()
 
         adv_images = images.clone().detach()
 
@@ -144,9 +142,6 @@ class PGD2(Attack):
         idx_set = [set() for _ in range(images.shape[0])]
 
         for i in range(self.steps):
-            if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
-                self.model.module.Lstm.reset_hidden_state()
-                self.model.module.Lstm.train()
             adv_images.requires_grad = True
             outputs = self.model(adv_images)
             cost = loss(outputs, labels)

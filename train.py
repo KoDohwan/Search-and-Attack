@@ -20,7 +20,6 @@ from gluoncv.torch.utils.lr_policy import GradualWarmupScheduler
 
 from torchvision import datasets, transforms
 import videotransforms
-from ucf_dataset import UCF as Dataset
 
 import warnings
 
@@ -55,8 +54,6 @@ def main_worker(cfg):
     if cfg.CONFIG.TRAIN.USE_WARMUP:
         scheduler_warmup = GradualWarmupScheduler(optimizer, multiplier=(cfg.CONFIG.TRAIN.WARMUP_END_LR / cfg.CONFIG.TRAIN.LR), total_epoch=cfg.CONFIG.TRAIN.WARMUP_EPOCHS,after_scheduler=scheduler)
     criterion = nn.CrossEntropyLoss().cuda()
-    if cfg.CONFIG.MODEL.NAME == 'lrcn':
-        criterion = nn.NLLLoss().cuda()
 
     base_iter = 0
     for epoch in range(cfg.CONFIG.TRAIN.EPOCH_NUM):

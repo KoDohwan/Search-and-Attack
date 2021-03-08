@@ -92,16 +92,11 @@ class FGSM2(Attack):
         self.eps = (eps / self.std).view((3, 1, 1, 1)).to(self.device)
 
     def forward(self, images, labels, idx_list):
-        if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
-            self.model.module.Lstm.reset_hidden_state()
-            self.model.module.Lstm.train()
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
         labels = self._transform_label(images, labels)
 
         loss = nn.CrossEntropyLoss()
-        if self.cfg.CONFIG.MODEL.NAME == 'lrcn':
-            loss = nn.NLLLoss().cuda()
 
         images.requires_grad = True
         outputs = self.model(images)

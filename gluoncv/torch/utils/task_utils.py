@@ -12,7 +12,7 @@ import torch.nn as nn
 
 import cv2
 
-from .torchattack import FGSM, PGD, ISA
+from .torchattack import FGSM, PGD, LEAST_FRAME_ATTACK
 
 from .utils import AverageMeter, accuracy
 
@@ -157,7 +157,7 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         model.module.Lstm.reset_hidden_state()
         model.module.Lstm.train()
 
-    atk = ISA(cfg, model)
+    atk = LEAST_FRAME_ATTACK(cfg, model)
 
     perturbation = 0.
     sum_frames = 0

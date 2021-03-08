@@ -233,12 +233,12 @@ def build_dataloader(cfg):
                                         video_transforms.RandomHorizontalFlipVideo(),
                                         video_transforms.RandomResizedCropVideo(112, (0.75, 1.25)),
                                         video_transforms.NormalizeVideo(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
-    train_dataset = Dataset(cfg.CONFIG.DATA.TRAIN_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, train_transforms)
+    train_dataset = Dataset(cfg, cfg.CONFIG.DATA.TRAIN_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, train_transforms)
 
     val_transforms = transforms.Compose([video_transforms.ResizeVideo((128, 171)),
                                         video_transforms.CenterCropVideo((112, 112)),
                                         video_transforms.NormalizeVideo(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
-    val_dataset = Dataset(cfg.CONFIG.DATA.VAL_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, val_transforms)
+    val_dataset = Dataset(cfg, cfg.CONFIG.DATA.VAL_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, val_transforms)
 
     if cfg.DDP_CONFIG.DISTRIBUTED:
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
@@ -265,7 +265,7 @@ def build_dataloader_val(cfg):
     val_transforms = transforms.Compose([video_transforms.ResizeVideo((128, 171)),
                                         video_transforms.CenterCropVideo((112, 112)),
                                         video_transforms.NormalizeVideo(mean=[0.43216, 0.394666, 0.37645], std=[0.22803, 0.22145, 0.216989])], )
-    val_dataset = Dataset(cfg.CONFIG.DATA.VAL_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, val_transforms)
+    val_dataset = Dataset(cfg, cfg.CONFIG.DATA.VAL_ANNO_PATH, cfg.CONFIG.DATA.DATA_PATH, val_transforms)
 
     if cfg.DDP_CONFIG.DISTRIBUTED:
         val_sampler = torch.utils.data.distributed.DistributedSampler(val_dataset)

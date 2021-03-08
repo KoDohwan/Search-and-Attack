@@ -42,7 +42,7 @@ def load_rgb_frames(root, vid, start_frame, clip_len, frame_rate):
         frames[i] = img
     return frames.transpose(0, 1)
 
-def make_dataset(split_file, root, num_classes=101):
+def make_dataset(cfg, split_file, root):
     dataset = []
     data = []
     with open(split_file, 'r') as f:
@@ -53,20 +53,21 @@ def make_dataset(split_file, root, num_classes=101):
         if vid[2:18] == 'HandStandPushups':
             vid = vid.replace('HandStandPushups', 'HandstandPushups')
         num_frames = len(os.listdir(os.path.join(root, vid)))
-        if num_frames <= 33:
+        if num_frames <= cfg.CONFIG.DATA.CLIP_LEN + 1:
             continue
         label = np.array([label_index-1])
         dataset.append((vid, label, num_frames))
     return dataset
 
 class UCF(data_utl.Dataset):
-    def __init__(self, split_file, root, transforms=None):
-        self.data = make_dataset(split_file, root)
+    def __init__(self, cfg, split_file, root, transforms=None):
+        self.cfg = cfg
+        self.data = make_dataset(cfg, split_file, root)
         self.transforms = transforms
         self.root = root
 
     def __getitem__(self, index):
-        clip_len = 32
+        clip_len = self.cfg.CONFIG.DATA.CLIP_LEN
         vid, label, num_frames = self.data[index]
 
         frame_rate = int(np.floor(float(num_frames) / float(clip_len)))
