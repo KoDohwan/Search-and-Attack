@@ -13,7 +13,6 @@ import os.path
 
 import cv2
 from torchvision import datasets, transforms
-import videotransforms
 
 from PIL import Image
 from tqdm import tqdm
@@ -47,11 +46,9 @@ def make_dataset(cfg, split_file, root):
     data = []
     with open(split_file, 'r') as f:
         for line in f:
-            data.append((line.split()[0].split('/')[1].split('.')[0], int(line.split()[1])))
+            data.append((line.split()[0].split('.')[0], int(line.split()[1])))
 
     for vid, label_index in data:
-        if vid[2:18] == 'HandStandPushups':
-            vid = vid.replace('HandStandPushups', 'HandstandPushups')
         num_frames = len(os.listdir(os.path.join(root, vid)))
         if num_frames <= cfg.CONFIG.DATA.CLIP_LEN + 1:
             continue
@@ -59,7 +56,7 @@ def make_dataset(cfg, split_file, root):
         dataset.append((vid, label, num_frames))
     return dataset
 
-class UCF(data_utl.Dataset):
+class Dataset(data_utl.Dataset):
     def __init__(self, cfg, split_file, root, transforms=None):
         self.cfg = cfg
         self.data = make_dataset(cfg, split_file, root)
@@ -72,9 +69,8 @@ class UCF(data_utl.Dataset):
 
         frame_rate = int(np.floor(float(num_frames) / float(clip_len)))
 
-        # start_frame = 1
-        # start_frame = random.randint(1, num_frames - clip_len - 1)
-        start_frame = random.randint(1, num_frames - clip_len * frame_rate + 1)
+        start_frame = 1
+        # start_frame = random.randint(1, num_frames - clip_len * frame_rate + 1)
 
         imgs = load_rgb_frames(self.root, vid, start_frame, clip_len, frame_rate)
         frames = self.transforms(imgs)

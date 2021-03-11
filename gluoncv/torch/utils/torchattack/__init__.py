@@ -11,6 +11,6 @@ from .attacks.tpgd import TPGD
 from .attacks.mifgsm import MIFGSM
 from .attacks.vanila import VANILA
 from .attacks.gn import GN
-from .attacks.least_frame_attack import LEAST_FRAME_ATTACK
+from .attacks.vulnerable_frame_attack import VFA
 
 __version__ = '2.11.0'

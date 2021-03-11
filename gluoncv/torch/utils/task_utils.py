@@ -12,7 +12,7 @@ import torch.nn as nn
 
 import cv2
 
-from .torchattack import FGSM, PGD, LEAST_FRAME_ATTACK
+from .torchattack import FGSM, PGD, VFA
 
 from .utils import AverageMeter, accuracy
 
@@ -153,11 +153,8 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
     grad_ratio = AverageMeter()
     grad_var = AverageMeter()
     model.eval()
-    if cfg.CONFIG.MODEL.NAME == 'lrcn':
-        model.module.Lstm.reset_hidden_state()
-        model.module.Lstm.train()
 
-    atk = LEAST_FRAME_ATTACK(cfg, model)
+    atk = VFA(cfg, model)
 
     perturbation = 0.
     sum_frames = 0
@@ -170,8 +167,6 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         val_label = val_label.long().view(-1)
         total += val_batch.shape[0]
 
-        if cfg.CONFIG.MODEL.NAME == 'lrcn':
-            model.module.Lstm.reset_hidden_state()
         adv_batch, pert, num_frames, ratio, var = atk(val_batch, val_label)
 
         outputs = model(adv_batch)

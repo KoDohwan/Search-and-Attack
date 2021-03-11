@@ -18,13 +18,7 @@ from gluoncv.torch.engine.launch import spawn_workers
 from gluoncv.torch.utils.utils import build_log_dir
 from gluoncv.torch.utils.lr_policy import GradualWarmupScheduler
 
-from torchvision import datasets, transforms
-import videotransforms
-
-import warnings
-
 def main_worker(cfg):
-    warnings.filterwarnings("ignore")
     # create tensorboard and logs
     if cfg.DDP_CONFIG.GPU_WORLD_RANK == 0:
         tb_logdir = build_log_dir(cfg)

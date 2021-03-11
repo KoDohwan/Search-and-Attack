@@ -30,12 +30,12 @@ CONFIG:
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'Greedy Loss2'
+    TYPE: 'Gradient'
     FRAME: 8
 
   DATA:
     TRAIN_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/testlist01_new.txt'
+    VAL_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/testlist01.txt'
     DATA_PATH: '../../data/video/UCF101/ucf101'
     CLASS_IDX_PATH: '../../data/video/UCF101/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
