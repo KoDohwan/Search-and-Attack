@@ -6,6 +6,7 @@ import os
 import time
 import numpy as np
 import random
+import json
 
 import torch
 import torch.nn as nn
@@ -23,8 +24,6 @@ def train_classification(base_iter, model, dataloader, epoch, criterion, optimiz
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
-    if cfg.CONFIG.MODEL.NAME == 'lrcn':
-        model.module.Lstm.reset_hidden_state()
 
     model.train()
     end = time.time()
@@ -40,8 +39,6 @@ def train_classification(base_iter, model, dataloader, epoch, criterion, optimiz
         prec1, prec5 = accuracy(outputs.data, train_label, topk=(1, 5))
 
         optimizer.zero_grad()
-        if cfg.CONFIG.MODEL.NAME == 'lrcn':
-            model.module.Lstm.reset_hidden_state()
         loss.backward()
         optimizer.step()
 
@@ -80,8 +77,6 @@ def validation_classification(model, val_dataloader, epoch, criterion, cfg, writ
     top1 = AverageMeter()
     top5 = AverageMeter()
     model.eval()
-    if cfg.CONFIG.MODEL.NAME == 'lrcn':
-        model.module.Lstm.reset_hidden_state()
 
     end = time.time()
     with torch.no_grad():
@@ -91,8 +86,6 @@ def validation_classification(model, val_dataloader, epoch, criterion, cfg, writ
             val_label = data[1].cuda()
             val_label = val_label.long().view(-1)
 
-            if cfg.CONFIG.MODEL.NAME == 'lrcn':
-                model.module.Lstm.reset_hidden_state()
             outputs = model(val_batch)
 
             loss = criterion(outputs, val_label)
@@ -152,9 +145,27 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
     frames = AverageMeter()
     grad_ratio = AverageMeter()
     grad_var = AverageMeter()
+    suc_var = AverageMeter()
+    fail_var = AverageMeter()
+    tot_var = AverageMeter()
+    suc_dis_var = AverageMeter()
+    fail_dis_var = AverageMeter()
+    tot_dis_var = AverageMeter()    
+    suc_var_ratio = AverageMeter()
+    fail_var_ratio = AverageMeter()
+    tot_var_ratio = AverageMeter()
     model.eval()
 
-    atk = VFA(cfg, model)
+    random_list = []
+    with open('idx.json', 'r') as f:
+        var_dict = json.load(f)
+    for idx, (var, distance_var) in list(var_dict.items()):
+        if distance_var > 1.0 and distance_var <= 1.5:
+            temp_list = []
+            for i in idx[1:-1].split(','):
+                temp_list.append(int(i))
+            random_list.append(temp_list)
+    atk = VFA(cfg, model, random_list)
 
     perturbation = 0.
     sum_frames = 0
@@ -167,9 +178,25 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         val_label = val_label.long().view(-1)
         total += val_batch.shape[0]
 
-        adv_batch, pert, num_frames, ratio, var = atk(val_batch, val_label)
+        adv_batch, pert, num_frames, ratio, var, idx_list = atk(val_batch, val_label)
 
         outputs = model(adv_batch)
+        _outputs = model(val_batch).detach().cpu()
+        for i in range(val_batch.shape[0]):
+            var = np.var(idx_list[i])
+            dis_var = np.var([np.sort(idx_list[i])[j+1] - np.sort(idx_list[i])[j] for j in range(cfg.CONFIG.ADV.FRAME-1)] + [np.sort(idx_list[i])[0] + cfg.CONFIG.DATA.CLIP_LEN - np.sort(idx_list[i])[cfg.CONFIG.ADV.FRAME-1]])
+            var_ratio = dis_var / var
+            if torch.argmax(outputs[i].detach().cpu()).item() != torch.argmax(_outputs[i]).item():
+                suc_var.update(var, 1)
+                suc_dis_var.update(dis_var, 1)
+                suc_var_ratio.update(var_ratio, 1)
+            else:
+                fail_var.update(var, 1)
+                fail_dis_var.update(dis_var, 1)
+                fail_var_ratio.update(var_ratio, 1)
+            tot_var.update(var, 1)
+            tot_dis_var.update(dis_var, 1)
+            tot_var_ratio.update(var_ratio, 1)
 
         loss = criterion(outputs, val_label)
         prec1a, prec5a = accuracy(outputs.data, val_label, topk=(1, 5))
@@ -194,6 +221,12 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
             print(print_string)
             print_string =  f'TAP: {TAP.sum}, avg_frames: {frames.avg:.2f}, grad_var: {grad_var.avg:.4f}, grad_ratio: {grad_ratio.avg:.2f}%'
             print(print_string)
+            print_string = f'suc_var: {suc_var.avg:.4f}, fail_var: {fail_var.avg:.4f}, tot_var: {tot_var.avg:.4f}'
+            print(print_string)
+            print_string = f'suc_dis_var: {suc_dis_var.avg:.4f}, fail_dis_var: {fail_dis_var.avg:.4f}, tot_dis_var: {tot_dis_var.avg:.4f}'
+            print(print_string)
+            print_string = f'suc_var_ratio: {suc_var_ratio.avg:.4f}, fail_var_ratio: {fail_var_ratio.avg:.4f}, tot_var_ratio: {tot_var_ratio.avg:.4f}'
+            print(print_string)
             print_string = f'Top-1 accuracy: {top1.avg:.2f}%, Top-5 accuracy: {top5.avg:.2f}%'
             print(print_string)
 
@@ -202,10 +235,11 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         os.makedirs(eval_path)
 
     with open(os.path.join(eval_path, "{}.txt".format(cfg.DDP_CONFIG.GPU_WORLD_RANK)), 'w') as f:
-        f.write(f'{losses.avg} {top1.avg} {top5.avg} {TAP.sum} {frames.sum} {frames.avg} {grad_ratio.avg} {grad_var.avg}\n')
+        f.write(f'{losses.avg} {top1.avg} {top5.avg} {TAP.sum} {frames.sum} {frames.avg} {grad_ratio.avg} {grad_var.avg} {suc_var.avg} {fail_var.avg} {tot_var.avg} {suc_dis_var.avg} {fail_dis_var.avg} {tot_dis_var.avg} {suc_var_ratio.avg} {fail_var_ratio.avg} {tot_var_ratio.avg}\n')
     torch.distributed.barrier()
 
     loss_lst, top1_lst, top5_lst, tap_lst, frames_sum_lst, frames_avg_lst, grad_ratio_lst, grad_var_lst = [], [], [], [], [], [], [], []
+    suc_var_lst, fail_var_lst, tot_var_lst, suc_dis_var_lst, fail_dis_var_lst, tot_dis_var_lst, suc_var_ratio_lst, fail_var_ratio_lst, tot_var_ratio_lst = [], [], [], [], [], [], [], [], []
     if cfg.DDP_CONFIG.GPU_WORLD_RANK == 0 and writer is not None:
         print("Collecting validation numbers")
         for x in range(cfg.DDP_CONFIG.GPU_WORLD_SIZE):
@@ -219,6 +253,15 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
             frames_avg_lst.append(data[5])
             grad_ratio_lst.append(data[6])
             grad_var_lst.append(data[7])
+            suc_var_lst.append(data[8])
+            fail_var_lst.append(data[9])
+            tot_var_lst.append(data[10])
+            suc_dis_var_lst.append(data[11])
+            fail_dis_var_lst.append(data[12])
+            tot_dis_var_lst.append(data[13])
+            suc_var_ratio_lst.append(data[14])
+            fail_var_ratio_lst.append(data[15])
+            tot_var_ratio_lst.append(data[16])
 
         fout = open('temp.txt', 'a')
         print("Global result:")
@@ -226,6 +269,15 @@ def adversarial_classification(model, val_dataloader, epoch, criterion, cfg, wri
         print_string = f'loss: {np.mean(loss_lst):.5f}'
         print(print_string)
         print_string = f'TAP: {np.sum(tap_lst)}, avg_frames: {np.mean(frames_avg_lst):.2f}, grad_var: {np.mean(grad_var_lst):.4f}, grad_ratio: {np.mean(grad_ratio_lst):.2f}%'
+        print(print_string)
+        fout.write(print_string + '\n')
+        print_string = f'suc_var: {np.mean(suc_var_lst):.4f}, fail_var: {np.mean(fail_var_lst):.4f}, tot_var: {np.mean(tot_var_lst):.4f}'
+        print(print_string)
+        fout.write(print_string + '\n')
+        print_string = f'suc_dis_var: {np.mean(suc_dis_var_lst):.4f}, fail_dis_var: {np.mean(fail_dis_var_lst):.4f}, tot_dis_var: {np.mean(tot_dis_var_lst):.4f}'
+        print(print_string)
+        fout.write(print_string + '\n')
+        print_string = f'suc_var_ratio: {np.mean(suc_var_ratio_lst):.4f}, fail_var_ratio: {np.mean(fail_var_ratio_lst):.4f}, tot_var_ratio: {np.mean(tot_var_ratio_lst):.4f}'
         print(print_string)
         fout.write(print_string + '\n')
         print_string = f'Top-1 accuracy: {np.mean(top1_lst):.2f}%, Top-5 accuracy: {np.mean(top5_lst):.2f}%'

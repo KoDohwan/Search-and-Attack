@@ -14,29 +14,30 @@ CONFIG:
   VISIBLE_GPU: 0,1,2,3,4,5,6,7
 
   TRAIN:
-    EPOCH_NUM: 100
-    BATCH_SIZE: 60
+    EPOCH_NUM: 50
+    BATCH_SIZE: 90
     LR: 0.005
     MOMENTUM: 0.9
     W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
-    LR_MILESTONE: [20, 40, 60]
+    LR_MILESTONE: [20, 30, 40]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 25
+    BATCH_SIZE: 50
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'Gradient'
+    TYPE: 'Random'
     FRAME: 8
 
   DATA:
-    TRAIN_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/testlist01.txt'
-    DATA_PATH: '../../data/video/UCF101/ucf101'
+    DATASET: 'ucf'
+    TRAIN_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/newtrainlist01.txt'
+    VAL_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/newtestlist01.txt'
+    DATA_PATH: '../../data/video/UCF101/original_videos'
     CLASS_IDX_PATH: '../../data/video/UCF101/ucfTrainTestlist/classInd.txt'
     NUM_CLASSES: 101
     CLIP_LEN: 32
@@ -52,7 +53,7 @@ CONFIG:
     NAME: 'i3d_resnet50_v1_custom'
     PRETRAINED: True
     LOAD: True
-    LOAD_PATH: 'logs/i3d/i3d_50_ucf.pth'
+    LOAD_PATH: 'models/i3d_ucf.pth'
 
   LOG:
     BASE_PATH: './logs/i3d'

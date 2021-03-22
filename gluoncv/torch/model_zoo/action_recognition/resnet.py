@@ -20,7 +20,8 @@ def r3d_18(cfg):
     model = VideoResNet(block=BasicBlock, conv_makers=[Conv3DSimple] * 4, layers=[2, 2, 2, 2], stem=BasicStem)
     state_dict = load_state_dict_from_url(model_urls['r3d_18'], progress=True)
     model.load_state_dict(state_dict)
-    model.fc = nn.Linear(model.fc.in_features, cfg.CONFIG.DATA.NUM_CLASSES)
+    if cfg.CONFIG.DATA.DATASET != 'kinetics':
+        model.fc = nn.Linear(model.fc.in_features, cfg.CONFIG.DATA.NUM_CLASSES)
     print('Pretrained Model Weight Loaded')
     return model
 
@@ -34,6 +35,8 @@ def r2plus1d_18(cfg):
     state_dict = load_state_dict_from_url(model_urls['r2plus1d_18'], progress=True)
     model.load_state_dict(state_dict)
     model.fc = nn.Linear(model.fc.in_features, cfg.CONFIG.DATA.NUM_CLASSES)
+    if cfg.CONFIG.DATA.DATASET != 'kinetics':
+        model.fc = nn.Linear(model.fc.in_features, cfg.CONFIG.DATA.NUM_CLASSES)
     print('Pretrained Model Weight Loaded')
     return model
 

@@ -14,31 +14,32 @@ CONFIG:
   VISIBLE_GPU: 0,1,2,3,4,5,6,7
 
   TRAIN:
-    EPOCH_NUM: 100
+    EPOCH_NUM: 50
     BATCH_SIZE: 20
     LR: 0.005
     MOMENTUM: 0.9
     W_DECAY: 1e-4
     LR_POLICY: 'Step'
     USE_WARMUP: False
-    LR_MILESTONE: [20, 40, 60]
+    LR_MILESTONE: [20, 30, 40]
     STEP: 0.1
 
   VAL:
     FREQ: 1
-    BATCH_SIZE: 5
+    BATCH_SIZE: 20
 
   ADV:
     METHOD: 'FGSM'
-    TYPE: 'Gradient'
+    TYPE: 'Random'
     FRAME: 8
 
   DATA:
-    TRAIN_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/trainlist01.txt'
-    VAL_ANNO_PATH: '../../data/video/UCF101/ucfTrainTestlist/testlist01.txt'
-    DATA_PATH: '../../data/video/UCF101/ucf101'
-    CLASS_IDX_PATH: '../../data/video/UCF101/ucfTrainTestlist/classInd.txt'
-    NUM_CLASSES: 101
+    DATASET: 'kinetics'
+    TRAIN_ANNO_PATH: '../../data/video/Kinetics/kineticsTrainTestlist/newtrainlist01.txt'
+    VAL_ANNO_PATH: '../../data/video/Kinetics/kineticsTrainTestlist/newtestlist01.txt'
+    DATA_PATH: '../../data/video/Kinetics/kinetics/'
+    CLASS_IDX_PATH: '../../data/video/Kinetics/kineticsTrainTestlist/classInd.txt'
+    NUM_CLASSES: 400
     CLIP_LEN: 32
     FRAME_RATE: 2
     NUM_SEGMENT: 1
@@ -50,9 +51,9 @@ CONFIG:
 
   MODEL:
     NAME: 'r2plus1d_18'
-    PRETRAINED: False
-    LOAD: True
-    LOAD_PATH: 'logs/r2plus1d/r2plus1d_18_ucf.pth'
+    PRETRAINED: True
+    LOAD: False
+    LOAD_PATH: 'models/r2plus1d_ucf.pth'
 
   LOG:
     BASE_PATH: './logs/r2plus1d'

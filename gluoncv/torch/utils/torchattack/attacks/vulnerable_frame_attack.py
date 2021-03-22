@@ -4,6 +4,7 @@ import torch.nn as nn
 import cv2
 
 import math
+import json
 import numpy as np
 import random
 import copy
@@ -13,10 +14,12 @@ from tqdm import tqdm
 from ..attack import Attack
 from .pgd import PGD2
 from .fgsm import FGSM2
+np.set_printoptions(threshold=np.inf)
 
 class VFA(Attack):
-    def __init__(self, cfg, model):
+    def __init__(self, cfg, model, random_list):
         super(VFA, self).__init__("VFA", cfg, model)
+        self.random_list = random_list
 
     def forward(self, images, labels):
         images = images.clone().detach().to(self.device)
@@ -48,12 +51,14 @@ class VFA(Attack):
         grad_var = np.mean(np.var(_grad_list, 1))
 
         # with open('idx.txt', 'a') as f:
-        #     f.write(str(grad_list) + '\n')
+        #     f.write(str(_grad_list) + '\n')
+
 
         if self.cfg.CONFIG.ADV.TYPE == 'All':
             idx_list = [[i for i in range(clip_len)] for _ in range(batch_size)]
         elif self.cfg.CONFIG.ADV.TYPE == 'Random':
             idx_list = [random.sample(range(clip_len), adv_num_frame) for _ in range(batch_size)]
+            idx_list = random.sample(self.random_list, batch_size)
         elif self.cfg.CONFIG.ADV.TYPE == 'Evenly':
             idx_list = [[int(clip_len / adv_num_frame * i) for i in range(adv_num_frame)] for _ in range(batch_size)]
         elif self.cfg.CONFIG.ADV.TYPE == 'L1':
@@ -169,4 +174,4 @@ class VFA(Attack):
 
         adv_images, l1_grad, num_frames = atk(images, labels, idx_list)
         ratio = float(atk_grad / grad_sum * 100) if grad_sum != 0. else 0.
-        return adv_images, l1_grad, num_frames, ratio, grad_var
+        return adv_images, l1_grad, num_frames, ratio, grad_var, idx_list
