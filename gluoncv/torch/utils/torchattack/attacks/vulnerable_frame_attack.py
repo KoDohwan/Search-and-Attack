@@ -167,6 +167,18 @@ class VFA(Attack):
             
             grad_sim = cos(max_grad, _grad)
             idx_list = torch.topk(grad_sim, adv_num_frame, dim=1).indices.tolist()
+        elif self.cfg.CONFIG.ADV.TYPE == 'SF':
+            idx_list = [[] for _ in range(batch_size)]
+            p = 2.71  
+            SF_mult = 1-np.reciprocal(np.power(p, np.arange(clip_len, dtype=float)))
+            scores = copy.deepcopy(_grad_list)
+
+            for Iter in range(adv_num_frame):
+                max_idx = scores.argmax(1)
+                for b in range(batch_size):
+                    idx_list[b].append(max_idx[b])
+                    dist = np.abs(np.arange(clip_len)-max_idx[b])
+                    scores[b] = scores[b] * SF_mult[dist]
         
 
         atk_grad = sum([sum(_grad_list[i, idx]) for i, idx in enumerate(idx_list)])
